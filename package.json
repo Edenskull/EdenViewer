@@ -1,0 +1,29 @@
+{
+  "name": "edenviewer",
+  "version": "1.0.0",
+  "description": "Viewer 3D using forge API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Edenskull/EdenViewer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Edenskull/EdenViewer/issues"
+  },
+  "homepage": "https://github.com/Edenskull/EdenViewer#readme",
+  "dependencies": {
+    "bootstrap": "^4.5.1",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "express-http-proxy": "^1.6.2",
+    "express-session": "^1.17.1",
+    "forge-apis": "^0.7.3",
+    "googleapis": "^58.0.0",
+    "jquery": "^3.5.1"
+  }
+}
