@@ -20,7 +20,7 @@ function isConnected() {
 
 
 $(document).ready(function(){
-    if(isConnected() == false) {
+    if(isConnected() == null) {
         googleSignIn();
     }
 });

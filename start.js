@@ -2,7 +2,8 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 
-const oauth = require('./server/oauth');
+const forgeOauth = require('./server/forgeOauth');
+const googleOauth = require('./server/googleOauth');
 
 var app = express();
 
@@ -22,7 +23,7 @@ app.use(session({
 app.use('/', express.static(__dirname + '\\client')); // redirect to client
 app.use('/bootstrap', express.static(__dirname + '\\node_modules\\bootstrap')); // redirect to boostrap
 app.use('/jquery', express.static(__dirname + '\\node_modules\\jquery\\dist')); // redirect to jquery
-app.use('/', oauth);
+app.use('/', forgeOauth);
 
 app.set('port', 80); // set port to 80
 
