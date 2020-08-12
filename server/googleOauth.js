@@ -1,32 +1,53 @@
+const config = require('./config');
 const { google } = require('googleapis');
 
-const googleOauth2 = google.auth.OAuth2;
-let googleClient = new googleOauth2(config.googleCredentials.client_id, config.googleCredentials.client_secret, config.googleCredentials.callbackURL);
+class DriveService {
+    constructor() {
+        this.oauth2client = new google.auth.OAuth2(
+            config.googleCredentials.client_id,
+            config.googleCredentials.client_secret,
+            config.googleCredentials.callbackURL
+        );
+        this.service = null;
+    }
 
-let googleToken = {};
+    createService(auth) {
+        this.service = google.drive('v3', auth);
+    }
 
-router.get('/google/auth', function(req, res) {
-    let url = googleClient.generateAuthUrl({
-        access_type: 'offline',
-        scope: config.googleCredentials.scopes
-    });
-    res.end(url);
-});
+    isConnected() {
+        return (this.service) ? true : false;
+    }
 
-router.get('/api/google/callback/oauth', function(req, res) {
-    let code = req.query.code;
-    googleClient.getToken(code, function(err, tokenInfo) {
-        if (err) {
-            res.end(JSON.stringify(err));
-            return
-        }
-        googleToken = tokenInfo;
-        res.redirect('/');
-    });
-});
+    searchFile(nextPageToken, tableResult) {
+        this.service.files.list({
+            q: "name contains '.rvt' and mimeType != 'application/vnd.google-apps.folder'",
+            pageSize: 1000,
+            fields: 'nextPageToken, files(id, name, size, mimeType, iconLink)',
+            pageToken: nextPageToken
+        }, function(err, lst) {
+            if(lst !== null) {
+                if(err) {
+                    console.log(err);
+                }
+                lst.files.forEach(file => {
+                    tableResult.push({
+                        id: file.id,
+                        text: file.name,
+                        type: file.mimeType,
+                        icon: file.iconLink
+                    });
+                });
+                if(lst.nextPageToken) {
+                    searchFile(lst.nextPageToken, tableResult);
+                } else {
+                    return tableResult;
+                }
+            }
+        });
+    }
+}
 
-router.get('/google/isAuthorized', function(req, res) {
-    res.end((googleToken != null) ? googleToken.access_token : null);
-});
-
-module.exports = router;
+module.exports = {
+    driveService: new DriveService()
+};

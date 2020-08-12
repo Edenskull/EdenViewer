@@ -13,6 +13,11 @@ function isConnected() {
         url: '/google/isAuthorized',
         async: false
     }).done(function(response) {
+        if(response == "false") {
+            response = false;
+        } else {
+            response = true;
+        }
         isConnected = response;
     });
     return isConnected;
@@ -20,7 +25,8 @@ function isConnected() {
 
 
 $(document).ready(function(){
-    if(isConnected() == null) {
+    console.log(isConnected());
+    if(isConnected() == false) {
         googleSignIn();
     }
 });
