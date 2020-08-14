@@ -1,32 +1,28 @@
 {
   "name": "edenviewer",
   "version": "1.0.0",
-  "description": "Viewer 3D using forge API",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "Viewer using autodesk and google API to display cad models.",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.14.0",
+    "body-parser": "*",
+    "bootstrap": "^4.5.2",
+    "cookie-parser": "*",
+    "cookie-session": "^1.3.3",
+    "express": "*",
+    "express-http-proxy": "^1.6.2",
+    "express-session": "*",
+    "forge-apis": "^0.4.3",
+    "googleapis": "^41.0.1",
+    "jquery": "^3.5.1",
+    "request": "*"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Edenskull/EdenViewer.git"
+    "url": "git://github.com/Edenskull/EdenViewer"
   },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Edenskull/EdenViewer/issues"
+  "scripts": {
+    "start": "NODE_ENV=production node start.js"
   },
-  "homepage": "https://github.com/Edenskull/EdenViewer#readme",
-  "dependencies": {
-    "bootstrap": "^4.5.1",
-    "cookie-parser": "^1.4.5",
-    "express": "^4.17.1",
-    "express-http-proxy": "^1.6.2",
-    "express-session": "^1.17.1",
-    "firebase": "^7.17.2",
-    "firebase-admin": "^9.0.0",
-    "forge-apis": "^0.7.3",
-    "googleapis": "^58.0.0",
-    "jquery": "^3.5.1",
-    "promise": "^8.1.0"
-  }
+  "author": "EdenSkull",
+  "license": "MIT"
 }

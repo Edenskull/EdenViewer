@@ -4,8 +4,18 @@
 }
 
 .card {
+    z-index: 999!important;
+    height: 100vh!important;
+    border-top-right-radius: 0!important;
     border-top-left-radius: 0!important;
     border-bottom-left-radius: 0!important;
+    border-bottom-right-radius: 0!important;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    line-height: .8;
 }
 
 .list-group {
@@ -19,13 +29,4 @@
 
 .list-group-item:hover {
     background-color: rgb(75, 75, 75)!important;
-}
-
-#fileSelector {
-    top: 50%;
-    transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -moz-transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
 }

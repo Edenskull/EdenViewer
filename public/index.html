@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>EdenViewer</title>
+	<link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css"
+		type="text/css">
+	<link rel="stylesheet" href="/fonta/css/all.css">
+	<link rel="shortcut icon" href=/img/favicon.ico type=image/x-icon>
+</head>
+
+<body>
+	<div id="fileSelector" class="card text-white bg-dark position-absolute" style="width: 18rem;">
+		<div class="card-header">
+			Models List
+			<i class="fas fa-arrow-left"></i>
+		</div>
+		<ul class="list-group list-group-flush" id="tree"></ul>
+	</div>
+	<div class="container-fluid">
+		<div id="forgeViewer"></div>
+	</div>
+
+	<script src="/jquery/jquery.min.js"></script>
+	<script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
+	<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="/fonta/js/all.js"></script>
+	<script language="JavaScript" src="/js/ForgeViewer.js"></script>
+	<script language="JavaScript" src="/js/google.js"></script>
+</body>
+
+</html>
