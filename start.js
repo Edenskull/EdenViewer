@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const favicon = require('serve-favicon');
 
 let app = express();
 
@@ -17,6 +18,7 @@ app.use(session({
 	resave: false,
 	saveUninitialized: true
 }));
+app.use(favicon(__dirname + '\\favicon.ico'));
 
 app.use('/', express.static(__dirname + '\\client')); // redirect to client
 app.use('/bootstrap', express.static(__dirname + '\\node_modules\\bootstrap')); // redirect to boostrap

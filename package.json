@@ -15,7 +15,8 @@
     "googleapis": "^41.0.1",
     "jquery": "^3.5.1",
     "jstree": "^3.3.10",
-    "request": "*"
+    "request": "*",
+    "serve-favicon": "^2.5.0"
   },
   "repository": {
     "type": "git",
