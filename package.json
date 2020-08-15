@@ -11,6 +11,8 @@
     "express": "*",
     "express-http-proxy": "^1.6.2",
     "express-session": "*",
+    "firebase": "^7.18.0",
+    "firebase-admin": "^9.1.0",
     "forge-apis": "^0.4.3",
     "googleapis": "^41.0.1",
     "jquery": "^3.5.1",

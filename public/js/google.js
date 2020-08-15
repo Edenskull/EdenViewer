@@ -91,10 +91,12 @@ function translateFile(googleId, googleName) {
 			}),
 			success: function (res) {
 				//$.notify(res.status + (res.readyToShow ? ' Launching viewer.' : ''), 'info');
-				if (res.readyToShow)
+				if (res.readyToShow) {
 					launchViewer(res.urn); // ready to show! launch viewer
-				else
-					wait(res.urn); // not ready to show... wait 5 seconds
+				} else {
+					$("#progress").removeClass('d-none');
+					wait(res.urn, res.md5); // not ready to show... wait 5 seconds
+				}
 			},
 			error: function (res) {
 				res = JSON.parse(res.responseText);
@@ -104,7 +106,7 @@ function translateFile(googleId, googleName) {
 	});
 }
 
-function wait(urn) {
+function wait(urn, md5) {
 	setTimeout(function () {
 		jQuery.ajax({
 			url: '/integration/isReadyToShow',
@@ -112,16 +114,19 @@ function wait(urn) {
 			type: 'POST',
 			dataType: 'json',
 			data: JSON.stringify({
-				'urn': urn
+				'urn': urn,
+				'md5': md5
 			}),
 			success: function (res) {
 				if (res.readyToShow) {
 					//$.notify('Ready! Launching viewer.', 'info');
+					$("#progress").addClass('d-none');
+					$("#bar").attr('style', `width: 0%`).attr('aria-valuenow', 0);
 					launchViewer(res.urn);
-				}
-				else {
+				} else {
+					$("#bar").attr('style', `width: ${res.progress}%`).attr('aria-valuenow', res.progress);
 					//$.notify(res.status, 'warn');
-					wait(res.urn);
+					wait(res.urn, md5);
 				}
 			},
 			error: function (res) {
@@ -129,7 +134,7 @@ function wait(urn) {
 				//$.notify(res.error, 'error');
 			}
 		});
-	}, 5000);
+	}, 2000);
 }
 
 var re = /(?:\.([^.]+))?$/; // regex to extract file extension

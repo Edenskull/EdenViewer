@@ -1,9 +1,7 @@
-'use strict';
-
-var token = require('./token');
-var express = require('express');
-var router = express.Router();
-var config = require('./config');
+var Token = require('./token');
+const express = require('express');
+const router = express.Router();
+const config = require('./config');
 var { google } = require('googleapis');
 
 var OAuth2 = google.auth.OAuth2;
@@ -28,19 +26,19 @@ router.get('/api/google/callback/oauth', function (req, res) {
 			res.end(JSON.stringify(err));
 			return;
 		}
-		var tokenSession = new token(req.session);
+		var tokenSession = new Token(req.session);
 		tokenSession.setGoogleToken(tokenInfo.access_token);
 		res.redirect('/');
 	});
 });
 
 router.get('/google/isAuthorized', function (req, res) {
-	var tokenSession = new token(req.session);
+	var tokenSession = new Token(req.session);
 	res.end(tokenSession.isGoogleAuthorized() ? 'true' : 'false');
 });
 
 router.get('/google/getTree', function (req, res) {
-	var tokenSession = new token(req.session);
+	var tokenSession = new Token(req.session);
 	if (!tokenSession.isGoogleAuthorized()) {
 		res.status(401).end('Please Google login first');
 		return;

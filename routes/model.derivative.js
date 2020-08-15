@@ -16,22 +16,13 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-'use strict'; // http://www.w3schools.com/js/js_strict.asp
-
-// token handling in session
-var token = require('./token');
-
-// web framework
-var express = require('express');
-var router = express.Router();
-
-var config = require('./config');
-
-// forge
-var ForgeSDK = require('forge-apis');
+var Token = require('./token');
+const express = require('express');
+const router = express.Router();
+const ForgeSDK = require('forge-apis');
 
 router.get('/md/viewerFormats', function (req, res) {
-  var tokenSession = new token(req.session);
+  var tokenSession = new Token(req.session);
   tokenSession.getTokenPublic(function(tokenPublic){
     var derivative = new ForgeSDK.DerivativesApi();
     derivative.getFormats({}, null, tokenPublic).then(function (response) {

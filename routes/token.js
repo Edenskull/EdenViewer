@@ -1,11 +1,13 @@
-var config = require('./config');
+const config = require('./config');
+const ForgeOauth2 = require('forge-apis');
 
 function Token(session) {
 	this._session = session;
 }
 
+// forge token handling
+
 Token.prototype.getTokenInternal = function (callback) {
-	var ForgeOauth2 = require('forge-apis');
 	var apiInstance = new ForgeOauth2.AuthClientTwoLegged(
 		config.forge.client_id, config.forge.client_secret,
 		config.forge.scopeInternal, false);
@@ -17,7 +19,6 @@ Token.prototype.getTokenInternal = function (callback) {
 Token.prototype.getTokenPublic = function (callback) {
 	var s = this._session;
 	if (this._session.tokenpublic == null) {
-		var ForgeOauth2 = require('forge-apis');
 		var apiInstance = new ForgeOauth2.AuthClientTwoLegged(
 			config.forge.client_id, config.forge.client_secret,
 			config.forge.scopePublic, false);

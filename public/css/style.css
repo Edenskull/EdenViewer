@@ -12,6 +12,13 @@
     padding: 0px 8px;
 }
 
+.progress {
+    position: absolute;
+    width: 100%;
+    z-index: 998!important;
+    border-radius: 0!important;
+}
+
 .card {
     z-index: 999!important;
     height: 100vh!important;

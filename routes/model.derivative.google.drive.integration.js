@@ -16,22 +16,31 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-var token = require('./token');
-var express = require('express');
-var router = express.Router();
-var bodyParser = require('body-parser');
+var Token = require('./token');
+const express = require('express');
+const router = express.Router();
+const bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
-var config = require('./config');
+const config = require('./config');
 var { google } = require('googleapis');
-var ForgeSDK = require('forge-apis');
-var request = require('request');
+const ForgeSDK = require('forge-apis');
+const request = require('request');
+const admin = require('firebase-admin');
+const firebaseAccount = require('../service_account.json');
+
+admin.initializeApp({
+	credential: admin.credential.cert(firebaseAccount),
+	databaseURL: "https://edenviewer-2e334.firebaseio.com"
+});
+
+const database = admin.firestore();
 
 var OAuth2 = google.auth.OAuth2;
 var oauth2Client = new OAuth2(config.google.client_id, config.google.client_secret, config.google.callbackURL);
 
 router.post('/integration/sendToTranslation', jsonParser, function (req, res) {
 	var googleFileId = req.body.googlefile;
-	var tokenSession = new token(req.session);
+	var tokenSession = new Token(req.session);
 	tokenSession.getTokenInternal(function (tokenInternal) {
 		oauth2Client.setCredentials({
 			access_token: tokenSession.getGoogleToken()
@@ -48,24 +57,37 @@ router.post('/integration/sendToTranslation', jsonParser, function (req, res) {
 				fileId: googleFileId,
 				fields: 'md5Checksum,name'
 			}, function (err, fileInfo) {
+				var alreadyTranslated = false;
 				var filename = fileInfo.data.name;
 				var md5Checksum = fileInfo.data.md5Checksum;
 				var ossObjectName = googleFileId + '.' + re.exec(filename)[1];
 				// at this point the bucket exists (either created or already there)
-				objects.getObjects(ossBucketKey, { 'limit': 100 }, null, tokenInternal).then(function (response) {
-					var alreadyTranslated = false;
-					var objectsInBucket = response.body.items;
-					objectsInBucket.forEach(function (item) {
-						if (item.objectKey === ossObjectName) {
-							res.status(200).json({
-								readyToShow: true,
-								status: 'File already translated.',
-								objectId: item.objectId,
-								urn: item.objectId.toBase64()
+				documentExists(md5Checksum).then(function(docUrn) {
+					if(docUrn != null) {
+						res.status(200).json({
+							readyToShow: true,
+							status: 'File already translated.',
+							urn: docUrn
+						});
+						alreadyTranslated = true;
+					} else {
+						objects.getObjects(ossBucketKey, { 'limit': 100 }, null, tokenInternal).then(function (response) {
+							var objectsInBucket = response.body.items;
+							objectsInBucket.forEach(function (item) {
+								if (item.objectKey === ossObjectName) {
+									console.log("creating")
+									documentRegister(item.objectId.toBase64(), md5Checksum);
+									res.status(200).json({
+										readyToShow: true,
+										status: 'File already translated.',
+										objectId: item.objectId,
+										urn: item.objectId.toBase64()
+									});
+									alreadyTranslated = true;
+								}
 							});
-							alreadyTranslated = true;
-						}
-					});
+						}).catch(function (e) { res.status(500).json({ error: e.statusMessage }); }); //getObjects
+					}
 					if (!alreadyTranslated) {
 						request({
 							url: 'https://www.googleapis.com/drive/v2/files/' + googleFileId + '?alt=media',
@@ -82,13 +104,14 @@ router.post('/integration/sendToTranslation', jsonParser, function (req, res) {
 									res.status(200).json({
 										readyToShow: false,
 										status: 'Translation in progress, please wait...',
-										urn: ossUrn
+										urn: ossUrn,
+										md5: md5Checksum
 									});
 								}).catch(function (e) { res.status(500).json({ error: e.statusMessage }) }); // translate
 							}).catch(function (err) { console.log(err); }); //uploadObject
 						});
 					}
-				}).catch(function (e) { res.status(500).json({ error: e.statusMessage }); }); //getObjects
+				});
 			});
 		});
 	});
@@ -96,22 +119,29 @@ router.post('/integration/sendToTranslation', jsonParser, function (req, res) {
 
 router.post('/integration/isReadyToShow', jsonParser, function (req, res) {
 	var ossUrn = req.body.urn;
-	var tokenSession = new token(req.session);
+	var md5Checksum = req.body.md5;
+	var tokenSession = new Token(req.session);
 	tokenSession.getTokenInternal(function (tokenInternal) {
 		var derivative = new ForgeSDK.DerivativesApi();
 		derivative.getManifest(ossUrn, {}, null, tokenInternal).then(function (response) {
+			var currentProgress;
 			var manifest = response.body;
 			if (manifest.status === 'success') {
-				res.status(200).json({
-					readyToShow: true,
-					status: 'Translation completed.',
-					urn: ossUrn
+				currentProgress = 100;
+				documentRegister(ossUrn, md5Checksum).then(function(){
+					res.status(200).json({
+						readyToShow: true,
+						progress: currentProgress,
+						urn: ossUrn
+					});
 				});
 			} else {
+				currentProgress = parseInt(manifest.progress.split(" ")[0].replace("%", ""), 10);
 				res.status(200).json({
 					readyToShow: false,
-					status: 'Translation ' + manifest.status + ': ' + manifest.progress,
-					urn: ossUrn
+					progress: currentProgress,
+					urn: ossUrn,
+					md5: md5Checksum
 				});
 			}
 		}).catch(function (e) { res.status(500).json({ error: e.error.body }); });
@@ -137,6 +167,28 @@ function translateData(ossUrn) {
 		}
 	};
 	return postJob;
+}
+
+async function documentExists(md5Checksum) {
+	var data = null;
+	await database.collection('models').where('md5', '==', md5Checksum).get().then(function(snap) {
+		snap.forEach(doc => {
+			data = doc.data();
+		});
+	});
+	if(data == null) {
+		return null;
+	} else {
+		return data.urn;
+	}
+}
+
+async function documentRegister(urn, md5Checksum) {
+	let data = {
+		md5: md5Checksum,
+		urn: urn
+	};
+	await database.collection('models').doc(urn).set(data);
 }
 
 var re = /(?:\.([^.]+))?$/; // regex to extract file extension
