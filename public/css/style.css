@@ -3,6 +3,15 @@
     height: 100vh;
 }
 
+#toggleFileSelectorOut {
+    position: absolute;
+    top: 15px;
+    z-index: 999!important;
+    background-color: rgba(0, 0, 0, .6);
+    color: white;
+    padding: 0px 8px;
+}
+
 .card {
     z-index: 999!important;
     height: 100vh!important;
@@ -16,6 +25,14 @@
     display: flex;
     justify-content: space-between;
     line-height: .8;
+}
+
+.tree {
+    overflow: auto;
+}
+
+.jstree-node:hover {
+    background-color: rgba(0, 0, 0, .2);
 }
 
 .list-group {

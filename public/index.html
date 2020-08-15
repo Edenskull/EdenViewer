@@ -10,16 +10,20 @@
 	<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css"
 		type="text/css">
 	<link rel="stylesheet" href="/fonta/css/all.css">
+	<link rel="stylesheet" href="/jstree/themes/default-dark/style.min.css">
 	<link rel="shortcut icon" href=/img/favicon.ico type=image/x-icon>
 </head>
 
 <body>
+	<div id="toggleFileSelectorOut" class="d-none">
+		<i class="fas fa-arrow-right"></i>
+	</div>
 	<div id="fileSelector" class="card text-white bg-dark position-absolute" style="width: 18rem;">
 		<div class="card-header">
 			Models List
-			<i class="fas fa-arrow-left"></i>
+			<i id="toggleFileSelector" class="fas fa-arrow-left"></i>
 		</div>
-		<ul class="list-group list-group-flush" id="tree"></ul>
+		<div id="jstree" class="tree"></div>
 	</div>
 	<div class="container-fluid">
 		<div id="forgeViewer"></div>
@@ -29,6 +33,7 @@
 	<script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
 	<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="/fonta/js/all.js"></script>
+	<script src="/jstree/jstree.min.js"></script>
 	<script language="JavaScript" src="/js/ForgeViewer.js"></script>
 	<script language="JavaScript" src="/js/google.js"></script>
 </body>

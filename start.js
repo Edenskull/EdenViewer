@@ -21,7 +21,8 @@ app.use(session({
 app.use('/', express.static(__dirname + '\\client')); // redirect to client
 app.use('/bootstrap', express.static(__dirname + '\\node_modules\\bootstrap')); // redirect to boostrap
 app.use('/jquery', express.static(__dirname + '\\node_modules\\jquery\\dist')); // redirect to jquery
-app.use('/fonta', express.static(__dirname + '\\node_modules\\@fortawesome\\fontawesome-free')) // redirect to fontawesome
+app.use('/fonta', express.static(__dirname + '\\node_modules\\@fortawesome\\fontawesome-free')); // redirect to fontawesome
+app.use('/jstree', express.static(__dirname + '\\node_modules\\jstree\\dist')); // redirect to jstree
 
 app.use('/', require('./routes/oauth')); // redirect oauth API calls
 app.use('/', require('./routes/model.derivative')); // redirect Model Derivative API calls

@@ -4,6 +4,21 @@ $(document).ready(function () {
 	} else {
 		getGoogleTree();
 	}
+	$("#toggleFileSelector").click(function(event) {
+		$("#fileSelector").animate({
+			width: "toggle",
+		}, 800, function() {
+			$("#toggleFileSelectorOut").toggleClass('d-none');
+		});
+	});
+	$("#toggleFileSelectorOut").click(function(event) {
+		console.log("ok");
+		$("#fileSelector").animate({
+			width: "toggle",
+		}, 800, function() {
+			$("#toggleFileSelectorOut").toggleClass('d-none');
+		});
+	});
 });
 
 function googleSignIn() {
@@ -28,16 +43,30 @@ function isGoogleAuthorized() {
 }
 
 function getGoogleTree() {
-	$.ajax({
-		url: '/google/getTree',
-		dataType: 'json',
-		multiple: false,
-		success: function (res) {
-			res.forEach(element => {
-				$('#tree').append(`<li class="list-group-item" onClick="translateFile('${element.id}','${element.text}');"><span class="text-muted size mr-1">(${element.size} mo)</span>${element.text}</li>`);
-			});
+	$('#jstree').jstree({
+		'core': {
+			'themes': { 'icons': false },
+			'data': {
+				'url': '/google/getTree',
+				'dataType': "json",
+				'multiple': false,
+				'selectSystemType': true,
+				'cache': false,
+				'data': function(node) {
+					return { 'id': node.id };
+				}
+			}
+		},
+		'plugins': [ "wholerow" ]
+	}).bind("activate_node.jstree", function(e, data) {
+		if(data != null && data.node != null) {
+			if(!isGoogleAuthorized()) {
+				googleSignIn();
+				return;
+			}
+			translateFile(data.node.id, data.node.text)
 		}
-	})
+	});
 }
 
 function translateFile(googleId, googleName) {
